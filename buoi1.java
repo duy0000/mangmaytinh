@@ -31,7 +31,7 @@ public class buoi1 {
                     EvenOddChecker();
                     break;
                 case 2:
-                       kiemTraNamNhuan();
+                    kiemTraNamNhuan();
                     break;
                 case 3:
                     songaytrongthang();
@@ -107,15 +107,23 @@ public class buoi1 {
     public static void songaytrongthang() {
         Scanner scanner = new Scanner(System.in);
 
-        System.out.print("Nhap thang (1-12): ");
-        int month = scanner.nextInt();
-
-        System.out.print("Nhap nam: ");
-        int year = scanner.nextInt();
-
+        int month, year;
         int daysInMonth = -1;
 
-        if (month >= 1 && month <= 12 && year > 0) {
+        do {
+            System.out.print("Nhập tháng (1-12): ");
+            month = scanner.nextInt();
+
+            System.out.print("Nhập năm: ");
+            year = scanner.nextInt();
+
+            if (month < 1 || month > 12 || year <= 0 ) {
+                System.out.println("Tháng hoặc năm không hợp lệ. Vui lòng nhập lại.");
+            }
+        } while (month < 1 || month > 12 || year <= 0);
+
+        System.out.println("--------------------------------");
+        if (kiemTraRangBuoc(month, year)) {
             switch (month) {
                 case 1: case 3: case 5: case 7: case 8: case 10: case 12:
                     daysInMonth = 31;
@@ -127,19 +135,17 @@ public class buoi1 {
                     daysInMonth = (year % 4 == 0 && year % 100 != 0) || (year % 400 == 0) ? 29 : 28;
                     break;
                 default:
-                    daysInMonth = -1; // Truong hop mac dinh (khong xay ra)
+                    daysInMonth = -1; // Trường hợp mặc định (không xảy ra)
             }
 
-        System.out.println("--------------------------------");
-            if (daysInMonth != -1) {
-
-                System.out.println("Thang " + month + " nam " + year + " co " + daysInMonth + " ngay.");
-            } else {
-                System.out.println("Thang khong hop le.");
-            }
+            System.out.println("Tháng " + month + " năm " + year + " có " + daysInMonth + " ngày.");
         } else {
-            System.out.println("Thang hoac nam khong hop le.");
+            System.out.println("Tháng không hợp lệ.");
         }
+    }
+
+    public static boolean kiemTraRangBuoc(int month, int year) {
+        return (month >= 1 && month <= 12 && year > 0);
     }
   
     public static void trathuvatuan() {
