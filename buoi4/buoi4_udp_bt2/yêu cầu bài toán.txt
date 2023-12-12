@@ -1,0 +1,4 @@
+dùng mô hình UDP để kết nối server vs client để thực hiện 3 yêu cầu
+1 xóa khoảng trắng
+2 viết hoa kí tự đầu
+3 check đối xứng

@@ -1,0 +1,1 @@
+nhập vào 1 số và tìm các số nguyên tố <=n

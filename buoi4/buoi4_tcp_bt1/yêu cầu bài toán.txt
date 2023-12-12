@@ -1,0 +1,1 @@
+làm 1 menu có 7 yêu cầu để gửi qua sever để xử lí
