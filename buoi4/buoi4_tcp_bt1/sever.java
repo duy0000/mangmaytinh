@@ -1,108 +1,139 @@
 package buoi4_tcp_bt1;
 
-import java.net.*;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.Scanner;
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.io.PrintWriter;
+import java.net.ServerSocket;
+import java.net.Socket;
 
 public class sever {
-    private static PrintWriter out; // Add a PrintWriter field
-
     public static void main(String[] args) {
-        try {
-            ServerSocket serverSocket = new ServerSocket(6799);
-            System.out.println("Server is running...");
+        try (ServerSocket serverSocket = new ServerSocket(9876)) {
+            System.out.println("Server running...");
 
             while (true) {
-                Socket socket = serverSocket.accept();
-                out = new PrintWriter(socket.getOutputStream(), true);
-                handleClient(socket);
+                // Chấp nhận kết nối từ client
+                Socket clientSocket = serverSocket.accept();
+                System.out.println("da ket noi voi client: " + clientSocket.getInetAddress());
+
+                // Tạo luồng đọc và ghi dữ liệu từ/to client
+                BufferedReader reader = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
+                PrintWriter out = new PrintWriter(clientSocket.getOutputStream(), true);
+
+                while (true) {
+                    // Đọc dữ liệu từ client
+                    String clientData = reader.readLine();
+                    System.out.println("du lieu tu client: " + clientData);
+
+                    // Kiểm tra điều kiện dừng
+                    if (clientData.equalsIgnoreCase("exit")) {
+                        break;
+                    }
+
+                    // Xử lý dữ liệu
+                    String[] inputArray = clientData.split(",");
+                    int choice = Integer.parseInt(inputArray[0].trim());
+                    String result = "";
+                    if(inputArray.length==2){
+
+                        switch (choice) {
+                            case 1:
+                               
+                                result =kiemTraChanLe(inputArray[1]);
+                                break;
+                            case 2:
+                                    
+                                result = kiemTraNamNhuan(inputArray[1]);
+                                break;
+                            
+                             case 4:
+                                    
+                                result = "dang phat trien";
+                                break;
+                             case 5:
+                                    
+                                result = "dang phat trien";
+                                break;
+                            case 6:
+                                
+                                result = "dang phat trien";
+                                break;
+                            case 7:
+                                
+                                result = "dang phat trien";
+                                break;    
+                            default:
+                            result = "khong tim thay lua chon "+inputArray[0];
+                            break;
+                            }
+                        }
+                        else if (inputArray.length==3){
+                            switch (choice) {
+                            case 3:
+                                
+                                result = tinhSoNgayTrongThang(inputArray[1], inputArray[2]);
+                                break;
+                            }
+                        }
+                    else{
+                        out.println("do dai input khong hop le vui long nhap lai");
+                    }
+                    // Thực hiện các thao tác tùy thuộc vào lựa chọn
+
+                    // Gửi kết quả về client
+                    out.println(result);
+                }
+
+                // Đóng kết nối với client hiện tại
+                clientSocket.close();
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
-    private static void handleClient(Socket socket) {
+    private static String kiemTraChanLe(String numberStr) {
         try {
-            BufferedReader reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-            String line = reader.readLine();
-            System.out.println("Received: " + line);
-
-            String result = convertNumberToWord(line);
-
-            out.println(result);
-
-            // Close resources outside the loop
-            reader.close();
-            socket.close();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    private static String convertNumberToWord(String number) {
-        try {
-            int num = Integer.parseInt(number);
-            switch (num) {
-                case 1:
-                    EvenOddChecker();
-                    break;
-                case 2:
-                    kiemTraNamNhuan();
-                    break;
-                default:
-                    return "khong tim thay";
-            }
+            int number = Integer.parseInt(numberStr.trim());
+            return (number % 2 == 0) ? "So chan" : "So le";
         } catch (NumberFormatException e) {
-            return "Not a valid number";
+            return "Loi: Dau vao khong phai la so nguyen";
         }
-        return "Some default value";
     }
 
-    public static void EvenOddChecker() {
-        Scanner scanner = new Scanner(System.in);
-        int number;
-
-        out.println("Nhap mot so nguyen: ");
-
-        while (!scanner.hasNextInt()) {
-            out.println("Vui long chi nhap so nguyen.");
-            scanner.next();
+    private static String kiemTraNamNhuan(String yearStr) {
+        try {
+            int year = Integer.parseInt(yearStr.trim());
+            boolean isLeapYear = (year % 4 == 0 && (year % 100 != 0 || year % 400 == 0));
+            return isLeapYear ? "La nam nhuan" : "Khong phai la nam nhuan";
+        } catch (NumberFormatException e) {
+            return "Loi: Dau vao khong phai la so nguyen";
         }
-        number = scanner.nextInt();
-
-        out.println("--------------------------------");
-        if (number % 2 == 0) {
-            out.println(number + " la so chan.");
-        } else {
-            out.println(number + " la so le.");
-        }
-        out.println("----------------------------------------------------");
     }
 
+    private static String tinhSoNgayTrongThang(String monthStr, String yearStr) {
+        try {
+            int month = Integer.parseInt(monthStr.trim());
+            int year = Integer.parseInt(yearStr.trim());
 
-    public static void kiemTraNamNhuan() {
-        Scanner scanner = new Scanner(System.in);
-        int year;
+            if (month < 1 || month > 12) {
+                return "Loi: Thang khong hop le";
+            }
 
-        System.out.print("Nhap mot nam de kiem tra xem no co phai la nam nhuan hay khong: ");
+            int daysInMonth;
+            if (month == 2) {
+                daysInMonth = (year % 4 == 0 && (year % 100 != 0 || year % 400 == 0)) ? 29 : 28;
+            } else if (month == 4 || month == 6 || month == 9 || month == 11) {
+                daysInMonth = 30;
+            } else {
+                daysInMonth = 31;
+            }
 
-        while (!scanner.hasNextInt()) {
-            System.out.println("Vui long chi nhap mot so.");
-            scanner.next();
+            return "Thang " + month + " nam " + year + " co " + daysInMonth + " ngay.";
+        } catch (NumberFormatException e) {
+            return "Loi: dau vao khong phai la so nguyen";
         }
-        year = scanner.nextInt();
-
-        System.out.println("--------------------------------");
-        if ((year % 4 == 0 && year % 100 != 0) || (year % 400 == 0)) {
-            System.out.println(year + " la nam nhuan.");
-        } else {
-            System.out.println(year + " khong phai la nam nhuan.");
-        }
-         System.out.println("----------------------------------------------------");
     }
+
+  
 }
