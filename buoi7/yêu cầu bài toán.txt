@@ -1,0 +1,5 @@
+Lập trình Java Socket viết chương trình Chat Nhóm đơn giản.
+- Server tạo 1 khung chat chung
+- Các Client: Join vào chat. Trước khi Join thì Điền Tên User để bắt đầu.
+// Gợi ý: Có thể sử dụng JFrame
+và lưu lịch sử vào file lịch sử .txt
